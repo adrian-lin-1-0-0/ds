@@ -32,11 +32,7 @@ func (r *RingSlice[T]) Write(v T) {
 }
 
 func (r *RingSlice[T]) BinarySearch(target T) int {
-	n := r.writePointer - r.readPointer
-	if r.full {
-		n = r.size
-	}
-	return sort.Search(n, func(i int) bool {
+	return sort.Search(r.Len(), func(i int) bool {
 		return r.Get(i) >= target
 	})
 }
@@ -49,4 +45,12 @@ func (r *RingSlice[T]) Do(f func(x T)) {
 	for i := 0; i < r.size; i++ {
 		f(r.Get(i))
 	}
+}
+
+func (r *RingSlice[T]) Len() int {
+	n := r.writePointer - r.readPointer
+	if r.full {
+		n = r.size
+	}
+	return n
 }
