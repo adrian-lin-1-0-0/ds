@@ -42,8 +42,18 @@ func (r *RingSlice[T]) Get(index int) T {
 }
 
 func (r *RingSlice[T]) Do(f func(x T)) {
-	for i := 0; i < r.size; i++ {
-		f(r.Get(i))
+	if r.full {
+		for i := r.readPointer; i < r.size; i++ {
+			f(r.data[i])
+		}
+		for i := 0; i < r.readPointer; i++ {
+			f(r.data[i])
+		}
+		return
+	}
+
+	for i := r.readPointer; i < r.writePointer; i++ {
+		f(r.data[i])
 	}
 }
 
